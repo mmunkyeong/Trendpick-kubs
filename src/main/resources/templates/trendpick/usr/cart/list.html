@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>TrendPick | 장바구니</title>
+    <style>
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table thead th {
+            background-color: #212529;
+            color: #fff;
+            text-align: center;
+        }
+        .mask-squircle {
+            border-radius: 16%;
+        }
+        .opacity-50 {
+            opacity: 0.5;
+        }
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            color: #212529;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid transparent;
+        }
+        .btn-outline-dark {
+            color: #212529;
+            background-color: transparent;
+            border-color: #212529;
+        }
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+<main layout:fragment="main"
+      class="min-h-screen w-screen bg-white flex flex-col pb-4 container mx-auto my-8 p-6 bg-white rounded shadow"
+      style="max-width: 100%; flex-grow: 1;">
+
+    <h2 class="text-3xl font-bold mb-8">장바구니</h2>
+    <table class="table-auto w-full text-left whitespace-no-wrap">
+        <thead>
+        <tr>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 rounded-tl rounded-bl text-center"><input type="checkbox" id="selectAllCheckbox" checked></th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">상품정보</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">가격</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center"></th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">수량</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">담은날짜</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">삭제</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item, i : ${cartItems}" class="border-b">
+            <td class="px-4 py-3 text-center">
+                <input type="checkbox" name="selectedItems" class="form-checkbox text-blue-500 h-5 w-5"
+                       th:data-product-price="${item.product.productOption.price}"
+                       th:data-product-id="${item.product.id}"
+                       th:checked="${i.count == 1 ? 'checked' : ''}"
+                       onclick="updateTotalPrice(this)">
+            </td>
+
+            <td class="px-4 py-3 flex items-center space-x-3 text-center">
+                <div>
+                    <a th:href="|/trendpick/products/${item.product.id}|">
+                        <img th:src="|/images/${item.getProduct().getFile().getFileName()}|" alt="Product Image" class="w-16 h-16 object-cover rounded">
+                    </a>
+                </div>
+                <div>
+                    <a th:href="@{/trendpick/products/{productId}(productId=${item.getProduct().getId()})}"
+                       th:text="${item.getProduct().getName()}" class="font-semibold text-gray-900 hover:text-blue-500"></a>
+                    <div class="text-sm text-gray-500 text-left" th:text="${item.getProduct().getBrand().getName()}"></div>
+                    <div class="text-sm text-gray-500 text-left" th:text="'size: ' + ${item.size} + ' / ' + 'color: ' + ${item.color}"></div>
+
+                </div>
+            </td>
+
+            <td id="itemPrice-${item.id}" class="px-4 py-3 text-center"
+                th:text="${#numbers.formatDecimal(item.product.productOption.price*item.quantity, 0, 'COMMA', 0, 'POINT')} + ' 원'">
+            </td>
+
+            <td class="px-4 py-3 text-center">
+                <form class="card-actions justify-start" th:id="'couponForm-' + ${item.id}">
+                    <input type="hidden" name="productId" th:value="${item.product.id}"/>
+                    <button type="submit" class="btn btn-sm btn-outline" th:attr="onclick=|submitCouponForm(event, ${item.id})|">
+                        <i class="fa-solid fa-circle-down"></i>
+                        쿠폰받기
+                    </button>
+                </form>
+            </td>
+
+            <form th:action="@{/trendpick/usr/cart/update}" method="post" class="quantity_update_form">
+                <input type="hidden" name="cartItemId" th:value="${item.getId()}">
+                <td class="px-4 py-3 text-center">
+                    <div class="quantity_div">
+                        <button type="button" class="quantity_btn minus_btn" onclick="updateQuantity(this, -1,form)">-
+                        </button>
+                        <input type="number" name="quantity" th:value="${item.quantity}" min="1" class="quantity_input" onchange="updateInputValue(this)" style='text-align:center' readonly>
+                        <button type="button" class="quantity_btn plus_btn" onclick="updateQuantity(this, 1,form)">+</button>
+                    </div>
+                </td>
+            </form>
+            <td class="px-4 py-3 text-center" th:text="${#temporals.format(item.getCreateDate(), 'MM/dd')}"></td>
+            <td class="px-4 py-3 text-center">
+                <a th:href="@{/trendpick/usr/cart/delete/{cartItemId}(cartItemId=${item.getId()})}"
+                   class="text-red-500 hover:text-red-700">X</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <br/><br/>
+
+    <form th:action="@{/trendpick/orders/order/cart}" method="get" id="cartForm">
+        <input type="hidden" id="selectedItemsInput" name="selectedItems">
+        <div class="mt-8 flex justify-end items-center">
+            <span class="text-2xl font-semibold mr-4">총 주문 금액: </span>
+            <span id="totalPrice" class="text-3xl font-bold text-black">0 원</span>
+            <button type="submit" class="bg-black text-white rounded-lg px-8 py-2 ml-8" onclick="submitCartForm(this.form)">구매하기</button>
+        </div>
+    </form>
+    <br/><br/>
+
+    <script>
+        // 수량 변경 시 결제 금액 업데이트
+        window.onload = function() {
+            updateAllPrices();
+            calculateTotalPrice();
+        }
+
+        function updateQuantity(element, amount, form) {
+            const quantityInput = element.parentNode.querySelector('.quantity_input');
+            let quantity = parseInt(quantityInput.value);
+            quantity += amount;
+            if (quantity < 1) {
+                quantity = 1;
+            }
+            quantityInput.value = quantity;
+            updatePrice(quantityInput);
+            calculateTotalPrice();
+            form.submit();
+            updateTotalCount();
+        }
+
+        function updateInputValue(input) {
+            const quantity = parseInt(input.value);
+            if (quantity < 1) {
+                input.value = 1;
+            }
+            updatePrice(input);
+            calculateTotalPrice();
+        }
+
+        function updatePrice(input) {
+            var parentRow = input.parentNode.parentNode.parentNode;
+            var itemPrice = parentRow.querySelector('[id^="itemPrice-"]');
+            var pricePerItem = parentRow.querySelector('[name="selectedItems"]').getAttribute('data-product-price');
+            var quantity = parseInt(input.value);
+            var newPrice = quantity * pricePerItem;
+            itemPrice.innerText = newPrice.toLocaleString() + " 원";
+        }
+
+        function updateAllPrices() {
+            const quantityInputs = document.getElementsByClassName('quantity_input');
+            for(let i = 0; i < quantityInputs.length; i++) {
+                updatePrice(quantityInputs[i]);
+            }
+        }
+
+        // 체크박스 상태 변경 시 결제 금액 계산 및 업데이트
+        function calculateTotalPrice() {
+            var checkboxes = document.getElementsByName('selectedItems');
+            var totalPrice = 0;
+
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    var quantityInput = checkboxes[i].parentNode.parentNode.querySelector('.quantity_input');
+                    var quantity = parseInt(quantityInput.value);
+                    var priceAttr = checkboxes[i].getAttribute('data-product-price');
+                    var price = priceAttr ? parseInt(priceAttr) : 0;
+                    totalPrice += price * quantity;
+
+                }
+            }
+            var totalPriceElement = document.getElementById('totalPrice');
+            if (totalPriceElement) {
+                totalPriceElement.innerText = totalPrice.toLocaleString() + ' 원';
+            }
+        }
+
+        // 전체 선택 체크박스 클릭 시 모든 상품 체크박스 상태 변경 및 결제 금액 업데이트
+        document.getElementById('selectAllCheckbox').addEventListener('click', function () {
+            var checkboxes = document.getElementsByName('selectedItems');
+            var isChecked = this.checked;
+            for (var i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = isChecked;
+                updateTotalPrice(checkboxes[i]);
+            }
+            calculateTotalPrice();
+        });
+
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].addEventListener('click', calculateTotalPrice);
+        }
+
+        // 개별 상품 체크박스 클릭 시 결제 금액 업데이트
+        function updateTotalPrice(element) {
+            calculateTotalPrice();
+        }
+
+        // 초기 결제 금액 계산
+        calculateTotalPrice();
+
+        function submitCartForm(form) {
+            var selectedItems = document.getElementsByName('selectedItems');
+            var selectedIds = [];
+            for (var i = 0; i < selectedItems.length; i++) {
+                if (selectedItems[i].checked) {
+                    var productId =parseInt(selectedItems[i].getAttribute('data-product-id'));
+                    selectedIds.push(productId);
+                }
+            }
+            document.getElementById('selectedItemsInput').value =  selectedIds.join(",");
+            document.getElementById('cartForm').submit();
+            form.submit();
+        }
+
+        // 총 주문 수량 업데이트
+        function updateTotalCount() {
+            var checkboxes = document.getElementsByName('selectedItems');
+            var totalCount = 0;
+
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    var quantityInput = checkboxes[i].parentNode.parentNode.querySelector('.quantity_input');
+                    var quantity = parseInt(quantityInput.value);
+                    totalCount += quantity;
+                }
+            }
+            // 총 주문 수량 업데이트
+            document.getElementById('totalCount').innerText = totalCount;
+        }
+
+        //상품별 적용가능한 쿠폰목록
+        function submitCouponForm(event, itemId) {
+            event.preventDefault();
+            var form = document.getElementById("couponForm-" + itemId);
+            var productId = form.querySelector("[name='productId']").value;
+            var url = '/trendpick/coupons/box?productId=' + productId;
+            window.open(url, 'couponWindow', 'width=800,height=600,scrollbars=yes');
+        }
+    </script>
+</main>
+</body>
+</html>

@@ -1,0 +1,141 @@
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
+html > body {
+    font-family: "Pretendard-Regular", serif;
+    text-underline-position: under;
+    word-break: keep-all;
+}
+
+html > body .label-text {
+    font-size: 1rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: .25em .4em;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25rem;
+}
+
+.badge-large {
+    display: inline-block;
+    padding: .5em .8em;
+    font-size: 100%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25rem;
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #dee2e6;
+}
+
+.image-main {
+    width: 500px;
+    height: 500px;
+    object-fit: cover;
+}
+
+.number-div {
+    width: 30px; /* Or whatever width you feel is appropriate */
+}
+
+.header, .main {
+    max-width: 1200px;  /* 최대 가로 너비 설정 */
+    width: 100%;  /* 가능한 한 넓게 설정 */
+    margin: 0 auto;  /* 페이지 중앙에 위치하도록 설정 */
+}
+
+.form-container {
+    display: flex;
+    justify-content: flex-start;
+}
+
+#addToCartForm, #ProductOptionForm {
+    margin-right: 10px;
+}
+
+.black-link {
+    color: black;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.black-link:hover {
+    text-decoration: none;
+}
+
+.custom-text {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.centered {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+/* 추가한 CSS 스타일 */
+.login-form {
+    display: flex;
+    justify-content: center;
+    padding-top: 100px; /* 로그인 폼을 상단에 띄움 */
+}
+
+.login-container {
+    width: 400px; /* 폼의 너비를 조정하여 크게 만듦 */
+    padding: 50px; /* 내부 여백을 조정하여 폼을 더 크게 만듦 */
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-form .form-control {
+    margin-bottom: 20px;
+}
+
+.login-form .input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.login-form .btn:hover {
+    background-color: #222;
+}
+
+.login-form .link {
+    display: block;
+    text-align: right;
+    margin-top: 10px;
+    color: #999;
+}
+
+.buttonCenter {
+    display: flex;
+    justify-content: center;
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>trendPick | 주문 상세</title>
+</head>
+<main class="min-h-screen flex flex-col p-10" layout:fragment="main">
+    <h1 class="text-2xl font-bold mb-8">주문 상세 내역</h1>
+    <div class="bg-white shadow-md rounded-lg p-4 mb-8">
+        <div th:each="orderItem, loop : ${order.orderItems}" class="mb-4 last:mb-0">
+            <div class="flex items-center">
+                <div>
+                    <a th:href="|/trendpick/products/${orderItem.productId}|">
+                        <img th:src="|/images/${orderItem.productFilePath}|" class="image-main" style="width: 100px; height: 100px;" alt="Product Image"/>
+                    </a>
+                </div>
+                <div class="ml-4">
+                    <div class="font-bold">
+                        <a th:href="|/trendpick/products/${orderItem.productId}|" th:text="${orderItem.productName}"></a>
+                    </div>
+                    <div class="text-sm text-gray-500" th:text="${orderItem.brandName}"></div>
+                    <div class="text-sm text-gray-500" th:text="${orderItem.count} + '개 / ' + 'size: ' + ${orderItem.size} + ' / ' + 'color: ' + ${orderItem.color}"></div>
+                    <div class="text-sm text-blue-500" th:text="'쿠폰할인가| ' + ${#numbers.formatDecimal(orderItem.discountPrice, 0, 'COMMA', 0, 'POINT')} + '원'"></div>
+                    <div th:text="'금액: ' + ${#numbers.formatDecimal(orderItem.totalPrice, 0, 'COMMA', 0, 'POINT')} + '원'"></div>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-end mt-6" th:if="${order.orderStatus} != 'CANCELED'">
+            <form th:action="|/payment/${order.orderId}/cancel|" method="get">
+                <button type="submit" class="btn btn-accent">주문 취소</button>
+            </form>
+        </div>
+    </div>
+    <div class="bg-white shadow-md rounded-lg p-4 mt-8">
+        <div class="flex justify-between mb-2">
+            <div class="font-bold">주문일시</div>
+            <div th:text="${#temporals.format(order.orderDate, 'YY-MM-dd')}"></div>
+        </div>
+        <div class="flex justify-between mb-2">
+            <div class="font-bold">결제수단</div>
+            <div th:text="${order.paymentMethod}"></div>
+        </div>
+        <div class="flex justify-between mb-2">
+            <div class="font-bold">총 결제금액</div>
+            <div th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' 원'"></div>
+        </div>
+        <div class="flex justify-between mb-2">
+            <div class="font-bold">배송지</div>
+            <div th:text="${address}"></div>
+        </div>
+    </div>
+    <script>
+        window.onload = function() {
+            var tds = document.querySelectorAll('td');
+            for(var i = 0; i < tds.length; i++){
+                var text = tds[i].innerText;
+                if(text.length > 20){
+                    tds[i].innerText = text.substring(0,20) + "...";
+                }
+            }
+        }
+    </script>
+
+</main>
+</html>

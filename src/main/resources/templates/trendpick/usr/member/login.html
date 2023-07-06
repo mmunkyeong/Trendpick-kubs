@@ -1,0 +1,71 @@
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+  <title>로그인</title>
+</head>
+<body>
+<main layout:fragment="main" class="login-form">
+
+  <script>
+    function LoginForm__submit(form) {
+
+      form.username.value = form.username.value.trim();
+
+      if (form.username.value.length === 0) {
+        toastWarning('아이디를 입력해주세요.');
+        form.username.focus();
+        return;
+      }
+      if (form.username.value.length < 4) {
+        toastWarning('아이디를 4자 이상 입력해주세요.');
+        form.username.focus();
+        return;
+      }
+
+      form.password.value = form.password.value.trim();
+
+      if (form.password.value.length === 0) {
+        form.password.focus();
+        toastWarning('비밀번호를 입력해주세요.');
+        return;
+      }
+      if (form.password.value.length < 4) {
+        toastWarning('비밀번호를 4자 이상 입력해주세요.');
+        form.password.focus();
+        return;
+      }
+      form.submit(); // 폼 발송
+    }
+  </script>
+
+  <div class="login-container">
+    <h2>로그인</h2>
+    <form th:action method="post" class="flex flex-col" onsubmit="LoginForm__submit(this); return false;">
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">이메일</span>
+        </label>
+        <label>
+          <input type="text" name="username" placeholder="이메일을 입력해주세요." class="input input-bordered input-accent" autoFocus/>
+        </label>
+      </div>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">비밀번호</span>
+        </label>
+        <label>
+          <input type="password" name="password" placeholder="비밀번호를 입력해주세요." class="input input-bordered input-accent" autoFocus/>
+        </label>
+      </div>
+      <button id="btn-join-1" class="btn">
+        <i class="fa-solid fa-user-plus"></i>
+        <span>로그인</span>
+      </button>
+    </form>
+    <br/><br/>
+    <div class="flex justify-center">
+      <a href="/trendpick/member/register" class="btn btn-wide btn-outline"><span>간편하게 회원가입하기</span></a>
+    </div>
+  </div>
+</main>
+</body>
+</html>
