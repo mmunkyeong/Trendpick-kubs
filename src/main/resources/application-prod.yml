@@ -14,10 +14,10 @@ spring:
   lifecycle:
     timeout-per-shutdown-phase: 1m
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mariadb-1-service:3306/trendpick
-    username: lldj
-    password: lldj123414
+    driver-class-name:
+    url:
+    username:
+    password:
   jpa:
     hibernate:
       ddl-auto: create
